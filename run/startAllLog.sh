@@ -1,9 +1,11 @@
 #!/usr/bin/env sh
-ALL_PIDS=$(ps aux | grep python | grep -E "Test|setup|start" | awk {'print $2'})
-if [ "$ALL_PIDS" != "" ]
-then
-        kill -9 $ALL_PIDS
-fi
+
+# ALL_PIDS=$(ps aux | grep python | grep -E "Test|setup|start" | awk {'print $2'})
+# if [ "$ALL_PIDS" != "" ]
+# then
+#         kill -9 $ALL_PIDS
+# fi
+sh "$NETSIM"/killAllProcs.sh
 
 # if no arguments were given we take the list of current Nodes
 if [ "$#" -eq 0 ] ;
