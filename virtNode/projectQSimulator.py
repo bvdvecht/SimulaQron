@@ -209,7 +209,21 @@ class projectQEngine(Engine):
         if (qubitNum + 1) > self.activeQubits:
             raise quantumError("No such qubit to apply a single qubit gate to")
 
+        print('Applying', gate, 'gate')
+
+        backend = self.eng.backend
+
+        self.eng.flush()
+        amp0 = backend.get_amplitude([0], self.qubitReg[qubitNum])
+        amp1 = backend.get_amplitude([1], self.qubitReg[qubitNum])
+        print('\tamplitude before gate:', amp0, ',', amp1)
+
         gate | self.qubitReg[qubitNum]
+
+        self.eng.flush()
+        amp0 = backend.get_amplitude([0], self.qubitReg[qubitNum])
+        amp1 = backend.get_amplitude([1], self.qubitReg[qubitNum])
+        print('\tamplitude after gate:', amp0, ',', amp1)
 
     def apply_twoqubit_gate(self, gate, qubit1, qubit2):
         """
@@ -229,7 +243,27 @@ class projectQEngine(Engine):
         if qubit1 == qubit2:
             raise quantumError("Control and target are equal")
 
+        #print('Applying', gate, 'gate')
+
+        backend = self.eng.backend
+
+        self.eng.flush()
+        ##amp0_q1 = backend.get_amplitude([0], self.qubitReg[qubit1])
+        ##amp1_q1 = backend.get_amplitude([1], self.qubitReg[qubit1])
+        ##amp0_q2 = backend.get_amplitude([0], self.qubitReg[qubit2])
+        ##amp1_q2 = backend.get_amplitude([1], self.qubitReg[qubit2])
+        #print('\tamplitude before gate, q1:', amp0_q1, ',', amp1_q1)
+        #print('\tamplitude before gate, q2:', amp0_q2, ',', amp1_q2)
+
         gate | (self.qubitReg[qubit1], self.qubitReg[qubit2])
+
+        self.eng.flush()
+        #amp0_q1 = backend.get_amplitude([0], self.qubitReg[qubit1])
+        #amp1_q1 = backend.get_amplitude([1], self.qubitReg[qubit1])
+        #amp0_q2 = backend.get_amplitude([0], self.qubitReg[qubit2])
+        #amp1_q2 = backend.get_amplitude([1], self.qubitReg[qubit2])
+        #print('\tamplitude after gate, q1:', amp0_q1, ',', amp1_q1)
+        #print('\tamplitude after gate, q2:', amp0_q2, ',', amp1_q2)
 
     def measure_qubit_inplace(self, qubitNum):
         """
