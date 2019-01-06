@@ -35,6 +35,7 @@ import numpy as np
 import logging
 
 import abc
+import copy
 
 from SimulaQron.virtNode.basics import quantumEngine, quantumError, noQubitError
 
@@ -380,9 +381,89 @@ class simpleEngine(quantumEngine):
         Applies a Y gate to the qubits with number qubitNum.
         """
 
-        i = complex(0, 1)
-        Y = qp.Qobj([[0, -i], [i, 0]], dims=[[2], [2]])
-        self.apply_onequbit_gate(Y, qubitNum)
+        #i = complex(0, 1)
+        #Y = qp.Qobj([[0, -i], [i, 0]], dims=[[2], [2]])
+        #self.apply_onequbit_gate(Y, qubitNum)
+        (Re, Im) = self.get_register_RI()
+        # print('Re:', Re)
+        # print('Im:', Im)
+
+        swap = False
+
+        if self.activeQubits == 2:
+            allQubits = self.simNode.root.simQubits
+            firstNum = -1
+            for i in range(len(allQubits)):
+                if allQubits[i].register == self:
+                    if firstNum == -1:
+                        firstNum = allQubits[i].num
+                    else:
+                        # found second num
+                        if allQubits[i].num < firstNum:
+                            swap = True
+
+
+
+        if len(Re) == 2:
+            print('density matrix:')
+            print('[{:<4} + {:<8} {:<4} + {:<4}]'.format(round(Re[0][0], 4), str(round(Im[0][0], 4)) + 'j',
+                                                           round(Re[0][1], 4), str(round(Im[0][1], 4)) + 'j'))
+            print('[{:<4} + {:<8} {:<4} + {:<4}]'.format(round(Re[1][0], 4), str(round(Im[1][0], 4)) + 'j',
+                                                           round(Re[1][1], 4), str(round(Im[1][1], 4)) + 'j'))
+        elif len(Re) == 4:
+            if swap:
+                rc = copy.deepcopy(Re)
+                ic = copy.deepcopy(Im)
+                Re[0][1] = rc[0][2]
+                Im[0][1] = ic[0][2]
+                Re[0][2] = rc[0][1]
+                Im[0][2] = ic[0][1]
+                Re[3][1] = rc[3][2]
+                Im[3][1] = ic[3][2]
+                Re[3][2] = rc[3][1]
+                Im[3][2] = ic[3][1]
+
+                Re[1][0] = rc[2][0]
+                Im[1][0] = ic[2][0]
+                Re[2][0] = rc[1][0]
+                Im[2][0] = ic[1][0]
+                Re[1][3] = rc[2][3]
+                Im[1][3] = ic[2][3]
+                Re[2][3] = rc[1][3]
+                Im[2][3] = ic[1][3]
+
+                Re[1][1] = rc[2][2]
+                Im[1][1] = ic[2][2]
+                Re[2][2] = rc[1][1]
+                Im[2][2] = ic[1][1]
+                Re[1][2] = rc[2][1]
+                Im[1][2] = ic[2][1]
+                Re[2][1] = rc[1][2]
+                Im[2][1] = ic[1][2]
+
+
+            print('density matrix:')
+            print('[{:<4} + {:<8} {:<4} + {:<8} {:<4} + {:<8} {:<4} + {:<4}]'.format(
+                round(Re[0][0], 4), str(round(Im[0][0], 4)) + 'j',
+                round(Re[0][1], 4), str(round(Im[0][1], 4)) + 'j',
+                round(Re[0][2], 4), str(round(Im[0][2], 4)) + 'j',
+                round(Re[0][3], 4), str(round(Im[0][3], 4)) + 'j'))
+            print('[{:<4} + {:<8} {:<4} + {:<8} {:<4} + {:<8} {:<4} + {:<4}]'.format(
+                round(Re[1][0], 4), str(round(Im[1][0], 4)) + 'j',
+                round(Re[1][1], 4), str(round(Im[1][1], 4)) + 'j',
+                round(Re[1][2], 4), str(round(Im[1][2], 4)) + 'j',
+                round(Re[1][3], 4), str(round(Im[1][3], 4)) + 'j'))
+            print('[{:<4} + {:<8} {:<4} + {:<8} {:<4} + {:<8} {:<4} + {:<4}]'.format(
+                round(Re[2][0], 4), str(round(Im[2][0], 4)) + 'j',
+                round(Re[2][1], 4), str(round(Im[2][1], 4)) + 'j',
+                round(Re[2][2], 4), str(round(Im[2][2], 4)) + 'j',
+                round(Re[2][3], 4), str(round(Im[2][3], 4)) + 'j'))
+            print('[{:<4} + {:<8} {:<4} + {:<8} {:<4} + {:<8} {:<4} + {:<4}]'.format(
+                round(Re[3][0], 4), str(round(Im[3][0], 4)) + 'j',
+                round(Re[3][1], 4), str(round(Im[3][1], 4)) + 'j',
+                round(Re[3][2], 4), str(round(Im[3][2], 4)) + 'j',
+                round(Re[3][3], 4), str(round(Im[3][3], 4)) + 'j'))
+
 
     def apply_T(self, qubitNum):
         """
